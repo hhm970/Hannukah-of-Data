@@ -1,4 +1,4 @@
-"""Solution to Puzzle 1 of Hannukah of Code 2023."""
+"""Solution to Puzzle 1 of Hannukah of Data 2023."""
 
 
 import pandas as pd
@@ -43,18 +43,25 @@ def format_phone(input_df: pd.DataFrame) -> pd.Series:
 
 if __name__ == "__main__":
 
+    # Acquire customer data from csv file
     customer_data = pd.read_csv("../noahs-customers.csv")
 
+    # Isolate the name and phone number, as these are the only necessary columns
     customer_data = customer_data[["name", "phone"]]
 
+    # We extract the last name from the name column
     customer_data["last_name"] = extract_last_name(customer_data)
 
     customer_data = customer_data[["phone", "last_name"]]
 
+    # We format the phone number - as the phone number shouldn't start with a 0 or 1,
+    # and remove all hyphens in the phone number.
     customer_data["phone"] = format_phone(customer_data)
 
+    # The customer last name should be the same length as a phone number.
     customer_data = customer_data[customer_data["last_name"].str.len() == customer_data["phone"].str.len()]
 
+    # We finally translate the customer phone number via a mobile phone keypad.
     customer_data = customer_data[customer_data["phone"] == customer_data["last_name"].apply(translate)]
     
     print(customer_data["phone"])

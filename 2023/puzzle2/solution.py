@@ -1,4 +1,4 @@
-"""Solution to Puzzle 2 of Hannukah of Code 2023."""
+"""Solution to Puzzle 2 of Hannukah of Data 2023."""
 
 
 import pandas as pd
@@ -62,6 +62,7 @@ def find_coffee_bagel_rug_desc(input_df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
 
+    # Acquire csv data first into dataframes
     customer_data = pd.read_csv("../noahs-customers.csv")
 
     orders_items_data = pd.read_csv("../noahs-orders_items.csv")
@@ -70,6 +71,7 @@ if __name__ == "__main__":
 
     products_data = pd.read_csv("../noahs-products.csv")
 
+    # Isolate appropriate columns for each dataframe
     customer_names_data = customer_data[["customerid", "name", "phone"]]
 
     orders_shipping_data = orders_data[["orderid", "customerid", "ordered", "shipped"]]
@@ -78,15 +80,19 @@ if __name__ == "__main__":
 
     products_data = products_data[["sku", "desc"]]
 
+    # Create new columns for first name & last name, and then filter appropriately
     customer_names_data = split_name(customer_names_data)
 
     customer_JP_name_data = customer_names_data[customer_names_data["firstname"].str.startswith("J") & customer_names_data["lastname"].str.startswith("P")]
 
+    # Join all 4 dataframes via inner joins
     customer_order_items_product_agg_df = combine_customer_order_product_df(customer_JP_name_data, 
                                             orders_shipping_data, orders_items_data, products_data)
 
+    # Filter out orders made/shipped in 2017
     customer_order_items_agg_df_2017 = find_orders_2017(customer_order_items_product_agg_df)
 
+    # Filter out orders with description containing coffee, bagel, rug
     customer_2017_coffee_bagel_rug_df = find_coffee_bagel_rug_desc(customer_order_items_agg_df_2017)
 
     print(customer_2017_coffee_bagel_rug_df["phone"].nunique)
